@@ -52,11 +52,9 @@ def option_l(list, path, opt_r)
     link = file_info.nlink
     right_link = format('%2d', link)
 
-    temp_user = Etc.getpwuid(file_info.uid).name
-    user = temp_user.ljust(10)
+    user = Etc.getpwuid(file_info.uid).name.ljust(10)
 
-    temp_group = Etc.getgrgid(file_info.gid).name
-    group = temp_group.ljust(10)
+    group = Etc.getgrgid(file_info.gid).name.ljust(10)
 
     size = file_info.size
     r_size = format('%3d', size)
@@ -168,4 +166,3 @@ path = File.expand_path(temp_path || '')
 show_help unless File.exist?(path)
 
 get_files(path, opt_a, opt_l, opt_r)
-
