@@ -77,29 +77,14 @@ def print_file_details(array_file_info)
 end
 
 def show_files(list, opt_r)
-  column_size = 3
-
   max_file_name = list.max_by(&:length)
   max_leng = max_file_name.length
 
   new_list = list.map { |x| x.ljust(max_leng) }
 
-  case new_list.size % column_size
-  when 1
-    2.times { new_list.push(nil) }
-  when 2
-    new_list.push(nil)
-  end
+  sliced_list = new_list.each_slice(3).map { |n| n }
+  trans_lists = sliced_list.reduce(&:zip).map(&:flatten)
 
-  if new_list.size <= 4
-    new_list
-  elsif new_list.size <= 8
-    slice_lists = new_list.each_slice(new_list.size / 2).to_a
-    trans_lists = slice_lists.transpose
-  else
-    slice_lists = new_list.each_slice(new_list.size / column_size).to_a
-    trans_lists = slice_lists.transpose
-  end
   print_files(opt_r, trans_lists, new_list)
 end
 
