@@ -133,11 +133,14 @@ end
 
 def get_files(path, opt_a, opt_l, opt_r)
   temp_list = []
-  Dir.foreach(path).sort.each do |item|
-    next if !opt_a && (item == '.' || item == '..' || item.start_with?('.'))
 
-    temp_list << item
-  end
+  temp_files = if opt_a
+                 Dir.glob('*', File::FNM_DOTMATCH, base: path)
+               else
+                 Dir.glob('*', base: path)
+               end
+
+  temp_files.each { |fn| temp_list << fn }
   list = opt_r ? temp_list.reverse : temp_list
   opt_l ? option_l(list, path, opt_r) : show_files(list, opt_r)
 end
