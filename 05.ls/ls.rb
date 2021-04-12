@@ -38,7 +38,7 @@ end
 def option_l(list, path, opt_r)
   array_file_info = []
   sum_blocks = 0
-  list.sort.each do |item|
+  list.each do |item|
     file_info = File.stat("#{path}/#{item}")
 
     each_block = file_info.blocks
@@ -72,16 +72,8 @@ def option_l(list, path, opt_r)
   print_file_details(opt_r, array_file_info)
 end
 
-def print_file_details(opt_r, array_file_info)
-  if !opt_r
-    array_file_info.each do |a|
-      puts a
-    end
-  else
-    array_file_info.reverse_each do |a|
-      puts a
-    end
-  end
+def print_file_details(array_file_info)
+  array_file_info.each { |a| puts a }
 end
 
 def show_files(list, opt_r)
@@ -140,7 +132,7 @@ def get_files(path, opt_a, opt_l, opt_r)
                  Dir.glob('*', base: path)
                end
 
-  temp_files.each { |fn| temp_list << fn }
+  temp_files.sort.each { |fn| temp_list << fn }
   list = opt_r ? temp_list.reverse : temp_list
   opt_l ? option_l(list, path, opt_r) : show_files(list, opt_r)
 end
