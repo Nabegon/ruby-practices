@@ -2,6 +2,7 @@
 
 require 'optparse'
 require 'etc'
+require 'date'
 
 def get_file_type(temp_ftype)
   file_type_opt = {
@@ -59,11 +60,11 @@ def option_l(list, path, opt_r)
     size = file_info.size
     r_size = format('%3d', size)
 
-    list_time = file_info.atime.to_a
-    t = Time.gm(list_time[4])
-    mon = t.strftime('%b')
-    day = format('%1d', list_time[3])
-    time = "#{list_time[2]}:#{list_time[1]}"
+    last_access_time = file_info.atime.to_s
+    date = DateTime.parse(last_access_time)
+    mon = date.strftime('%b')
+    day = date.strftime('%1d')
+    time = "#{date.strftime('%H')}:#{date.strftime('%M')}"
 
     array_file_info << "#{file_type + permission} #{right_link} #{user} #{group} #{r_size} #{mon} #{day} #{time} #{item}"
   end
