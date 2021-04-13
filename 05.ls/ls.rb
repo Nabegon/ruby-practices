@@ -4,19 +4,16 @@ require 'optparse'
 require 'etc'
 require 'date'
 
-def get_file_type(temp_ftype)
-  file_type_opt = {
+class FileType
+  FILE_TYPE_OPTIONS = {
     'file' => '-',
     'directory' => 'd',
     'link' => 'l'
-  }
-  file_type_opt.fetch(temp_ftype)
+  }.freeze
 end
 
-def get_permission(temp_permission)
-  nums = (temp_permission % 1000).to_s
-  nums_array = nums.to_s.split('')
-  list_options = {
+class PermissionType
+  PERMISSION_OPTIONS = {
     0 => '---',
     1 => '--x',
     2 => '-w-',
@@ -25,17 +22,26 @@ def get_permission(temp_permission)
     5 => 'r-x',
     6 => 'rw-',
     7 => 'rwx'
-  }
+  }.freeze
+end
+
+def get_file_type(temp_ftype)
+  FileType::FILE_TYPE_OPTIONS.fetch(temp_ftype)
+end
+
+def get_permission(temp_permission)
+  nums = (temp_permission % 1000).to_s
+  nums_array = nums.to_s.split('')
+
   convert_permission = []
   nums_array.each do |n|
-    convert_permission << list_options[n.to_i]
+    convert_permission << PermissionType::PERMISSION_OPTIONS[n.to_i]
   end
   convert_permission.map { |i| "'#{i}'" }.join('')
   convert_permission
 end
 
-# ls -l
-def option_l(list, path, opt_r)
+def option_l(list, path, _opt_r)
   array_file_info = []
   sum_blocks = 0
   list.each do |item|
@@ -69,7 +75,7 @@ def option_l(list, path, opt_r)
     array_file_info << "#{file_type + permission} #{right_link} #{user} #{group} #{r_size} #{mon} #{day} #{time} #{item}"
   end
   puts "total #{sum_blocks}"
-  print_file_details(opt_r, array_file_info)
+  print_file_details(array_file_info)
 end
 
 def print_file_details(array_file_info)
