@@ -33,8 +33,7 @@ def get_permission(temp_permission)
   nums_array.each do |n|
     convert_permission << PERMISSION_OPTIONS[n.to_i]
   end
-  convert_permission.map { |i| "'#{i}'" }.join('')
-  convert_permission
+  convert_permission.map { |i| "#{i}" }.join('')
 end
 
 def option_l(list, path, _opt_r)
@@ -49,8 +48,8 @@ def option_l(list, path, _opt_r)
     temp_ftype = file_info.ftype
     file_type = get_file_type(temp_ftype)
 
-    temp_permission = format('0%o', file_info.mode).to_i
-    permission = get_permission(temp_permission).join
+    temp_permission = format('%o', file_info.mode).to_i
+    permission = get_permission(temp_permission)
 
     link = file_info.nlink
     right_link = format('%2d', link)
