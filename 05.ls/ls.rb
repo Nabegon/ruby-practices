@@ -4,29 +4,25 @@ require 'optparse'
 require 'etc'
 require 'date'
 
-class FileType
-  FILE_TYPE_OPTIONS = {
-    'file' => '-',
-    'directory' => 'd',
-    'link' => 'l'
-  }.freeze
-end
+FILE_TYPE_OPTIONS = {
+  'file' => '-',
+  'directory' => 'd',
+  'link' => 'l'
+}.freeze
 
-class PermissionType
-  PERMISSION_OPTIONS = {
-    0 => '---',
-    1 => '--x',
-    2 => '-w-',
-    3 => '-wx',
-    4 => 'r--',
-    5 => 'r-x',
-    6 => 'rw-',
-    7 => 'rwx'
-  }.freeze
-end
+PERMISSION_OPTIONS = {
+  0 => '---',
+  1 => '--x',
+  2 => '-w-',
+  3 => '-wx',
+  4 => 'r--',
+  5 => 'r-x',
+  6 => 'rw-',
+  7 => 'rwx'
+}.freeze
 
 def get_file_type(temp_ftype)
-  FileType::FILE_TYPE_OPTIONS.fetch(temp_ftype)
+  FILE_TYPE_OPTIONS.fetch(temp_ftype)
 end
 
 def get_permission(temp_permission)
@@ -35,7 +31,7 @@ def get_permission(temp_permission)
 
   convert_permission = []
   nums_array.each do |n|
-    convert_permission << PermissionType::PERMISSION_OPTIONS[n.to_i]
+    convert_permission << PERMISSION_OPTIONS[n.to_i]
   end
   convert_permission.map { |i| "'#{i}'" }.join('')
   convert_permission
