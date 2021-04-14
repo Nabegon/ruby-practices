@@ -21,45 +21,45 @@ PERMISSION_OPTIONS = {
   7 => 'rwx'
 }.freeze
 
-def get_file_type(temp_ftype)
-  FILE_TYPE_OPTIONS.fetch(temp_ftype)
+def get_file_type(ftype_string)
+  FILE_TYPE_OPTIONS.fetch(ftype_string)
 end
 
-def get_permission(temp_permission)
-  nums = (temp_permission % 1000).to_s
-  nums_array = nums.to_s.split('')
+def get_permission(permission_octal)
+  permission_last_3_digits = (permission_octal % 1000).to_s
+  last_3_digits_array = permission_last_3_digits.to_s.split('')
 
-  convert_permission = []
-  nums_array.each do |n|
-    convert_permission << PERMISSION_OPTIONS[n.to_i]
+  permission_char = []
+  last_3_digits_array.each do |n|
+    permission_char << PERMISSION_OPTIONS[n.to_i]
   end
-  convert_permission.map(&:to_s).join('')
+  permission_char.map(&:to_s).join('')
 end
 
-def option_l(list, path, _opt_r)
-  array_file_info = []
+def load_file_details(corresponding_files_for_options_a_and_r, file_path)
+  all_file_details = []
   sum_blocks = 0
-  list.each do |item|
-    file_info = File.stat("#{path}/#{item}")
+  corresponding_files_for_options_a_and_r.each do |item|
+    file_info = File.stat("#{file_path}/#{item}")
 
     each_block = file_info.blocks
     sum_blocks += each_block
 
-    temp_ftype = file_info.ftype
-    file_type = get_file_type(temp_ftype)
+    ftype_string = file_info.ftype
+    file_type = get_file_type(ftype_string)
 
-    temp_permission = format('%o', file_info.mode).to_i
-    permission = get_permission(temp_permission)
+    permission_octal = format('%o', file_info.mode).to_i
+    permission = get_permission(permission_octal)
 
-    link = file_info.nlink
-    right_link = format('%2d', link)
+    unformatted_link = file_info.nlink
+    link = format('%2d', unformatted_link)
 
     user = Etc.getpwuid(file_info.uid).name.ljust(10)
 
     group = Etc.getgrgid(file_info.gid).name.ljust(10)
 
-    size = file_info.size
-    r_size = format('%3d', size)
+    unformatted_size = file_info.size
+    size = format('%3d', unformatted_size)
 
     last_access_time = file_info.atime.to_s
     date = DateTime.parse(last_access_time)
@@ -67,73 +67,79 @@ def option_l(list, path, _opt_r)
     day = date.strftime('%1d')
     time = "#{date.strftime('%H')}:#{date.strftime('%M')}"
 
-    array_file_info << "#{file_type + permission} #{right_link} #{user} #{group} #{r_size} #{mon} #{day} #{time} #{item}"
+    all_file_details << "#{file_type + permission} #{link} #{user} #{group} #{size} #{mon} #{day} #{time} #{item}"
   end
   puts "total #{sum_blocks}"
-  print_file_details(array_file_info)
+  print_file_details(all_file_details)
 end
 
-def print_file_details(array_file_info)
-  array_file_info.each { |a| puts a }
+def print_file_details(all_file_details)
+  all_file_details.each { |each_line| puts each_line }
 end
 
-def show_files(list, _opt_r)
-  max_leng = list.max_by(&:length).length
+def put_files_into_2d_array(corresponding_files_for_options_a_and_r)
+  max_length_string = corresponding_files_for_options_a_and_r.max_by(&:length).length
 
-  new_list = list.map { |x| x.ljust(max_leng + 1) }
+  left_justified_files = corresponding_files_for_options_a_and_r.map do |file_name|
+    file_name.ljust(max_length_string + 1)
+  end
 
-  size_array = (new_list.size % 3).zero? ? new_list.size / 3 : new_list.size / 3 + 1
-  sliced_list = new_list.each_slice(size_array).map { |n| n }
-  trans_lists = sliced_list.reduce(&:zip).map(&:flatten)
+  line_num = (left_justified_files.size % 3).zero? ? left_justified_files.size / 3 : left_justified_files.size / 3 + 1
+  two_dimensional_array = left_justified_files.each_slice(line_num).map { |n| n }
+  transposed_list = two_dimensional_array.reduce(&:zip).map(&:flatten)
 
-  print_files(trans_lists)
+  print_files_in_3_clumns(transposed_list)
 end
 
-def print_files(trans_lists)
-  trans_lists.each do |array|
-    array.each do |display|
-      print display.to_s
+def print_files_in_3_clumns(transposed_list)
+  transposed_list.each do |array|
+    array.each do |each_file_name|
+      print each_file_name.to_s
     end
     puts "\n"
   end
 end
 
-def get_files(path, opt_a, opt_l, opt_r)
-  temp_list = []
+def load_files(file_path, option_a, option_l, option_r)
+  sorted_files = []
 
-  temp_files = if opt_a
-                 Dir.glob('*', File::FNM_DOTMATCH, base: path)
-               else
-                 Dir.glob('*', base: path)
-               end
+  files_from_path = if option_a
+                      Dir.glob('*', File::FNM_DOTMATCH, base: file_path)
+                    else
+                      Dir.glob('*', base: file_path)
+                    end
 
-  temp_files.sort.each { |fn| temp_list << fn }
-  list = opt_r ? temp_list.reverse : temp_list
-  opt_l ? option_l(list, path, opt_r) : show_files(list, opt_r)
+  files_from_path.sort.each { |file| sorted_files << file }
+  corresponding_files_for_options_a_and_r = option_r ? sorted_files.reverse : sorted_files
+  if option_l
+    load_file_details(corresponding_files_for_options_a_and_r,
+                      file_path)
+  else
+    put_files_into_2d_array(corresponding_files_for_options_a_and_r)
+  end
 end
 
-def show_help
+def show_message
   puts "The path or option doesn't exist. Please type correct path or option."
   exit
 end
 
-input_index = 0
-
-input = ARGV
-
 begin
   options = ARGV.getopts('alr')
 rescue OptionParser::InvalidOption
-  show_help
+  show_message
 end
-opt_a = options['a']
-opt_l = options['l']
-opt_r = options['r']
+option_a = options['a']
+option_l = options['l']
+option_r = options['r']
 
-temp_path = input.at(input_index).to_s
+input = ARGV
+# here is for getting a file path.
+# there is only one file path, thus, the index of array is 0.
+input_path = input.at(0).to_s
 
-path = File.expand_path(temp_path || '')
+file_path = File.expand_path(input_path || '')
 
-show_help unless File.exist?(path)
+show_message unless File.exist?(file_path)
 
-get_files(path, opt_a, opt_l, opt_r)
+load_files(file_path, option_a, option_l, option_r)
