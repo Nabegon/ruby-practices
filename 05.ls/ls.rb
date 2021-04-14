@@ -33,7 +33,7 @@ def get_permission(temp_permission)
   nums_array.each do |n|
     convert_permission << PERMISSION_OPTIONS[n.to_i]
   end
-  convert_permission.map { |i| "#{i}" }.join('')
+  convert_permission.map(&:to_s).join('')
 end
 
 def option_l(list, path, _opt_r)
@@ -77,35 +77,24 @@ def print_file_details(array_file_info)
   array_file_info.each { |a| puts a }
 end
 
-def show_files(list, opt_r)
-  max_file_name = list.max_by(&:length)
-  max_leng = max_file_name.length
+def show_files(list, _opt_r)
+  max_leng = list.max_by(&:length).length
 
-  new_list = list.map { |x| x.ljust(max_leng) }
+  new_list = list.map { |x| x.ljust(max_leng + 1) }
 
-  sliced_list = new_list.each_slice(3).map { |n| n }
+  size_array = (new_list.size % 3).zero? ? new_list.size / 3 : new_list.size / 3 + 1
+  sliced_list = new_list.each_slice(size_array).map { |n| n }
   trans_lists = sliced_list.reduce(&:zip).map(&:flatten)
 
-  print_files(opt_r, trans_lists, new_list)
+  print_files(trans_lists)
 end
 
-def print_files(opt_r, trans_lists, new_list)
-  if !opt_r
-    if trans_lists
-      trans_lists.each do |row|
-        puts row.join(' ')
-      end
-    else
-      puts new_list
+def print_files(trans_lists)
+  trans_lists.each do |array|
+    array.each do |display|
+      print display.to_s
     end
-  elsif trans_lists
-    trans_lists.each do |row|
-      puts row.join(' ')
-    end
-  else
-    new_list.each do |row|
-      puts row
-    end
+    puts "\n"
   end
 end
 
