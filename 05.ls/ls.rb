@@ -84,9 +84,19 @@ def put_files_into_2d_array(corresponding_files_for_options_a_and_r)
     file_name.ljust(max_length_string + 1)
   end
 
+  # use 3, because the max colmun is 3
   line_num = (left_justified_files.size % 3).zero? ? left_justified_files.size / 3 : left_justified_files.size / 3 + 1
-  two_dimensional_array = left_justified_files.each_slice(line_num).map { |n| n }
-  transposed_list = two_dimensional_array.reduce(&:zip).map(&:flatten)
+  two_dimensional_array = left_justified_files.each_slice(line_num).map { |array| array }
+
+  # to use transpose, insert nil if the size of the array is different
+  max_size = two_dimensional_array.map(&:size).max
+  two_dimensional_array.each do |list|
+    if list.size < max_size
+      num = max_size - list.size
+      list.fill(nil, list.size, num)
+    end
+  end
+  transposed_list = two_dimensional_array.transpose.map(&:flatten)
 
   print_files_in_3_clumns(transposed_list)
 end
@@ -108,7 +118,7 @@ def load_files(file_path, option_a, option_l, option_r)
                     else
                       Dir.glob('*', base: file_path)
                     end
-
+  exit if files_from_path.empty? # exit if there is no file in the directory
   files_from_path.sort.each { |file| sorted_files << file }
   corresponding_files_for_options_a_and_r = option_r ? sorted_files.reverse : sorted_files
   if option_l
