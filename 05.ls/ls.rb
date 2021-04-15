@@ -118,7 +118,6 @@ def load_files(file_path, option_a, option_l, option_r)
                     else
                       Dir.glob('*', base: file_path)
                     end
-  exit if files_from_path.empty? # exit if there is no file in the directory
   files_from_path.sort.each { |file| sorted_files << file }
   corresponding_files_for_options_a_and_r = option_r ? sorted_files.reverse : sorted_files
   if option_l
@@ -129,27 +128,12 @@ def load_files(file_path, option_a, option_l, option_r)
   end
 end
 
-def show_message
-  puts "The path or option doesn't exist. Please type correct path or option."
-  exit
-end
+options = ARGV.getopts('alr')
 
-begin
-  options = ARGV.getopts('alr')
-rescue OptionParser::InvalidOption
-  show_message
-end
 option_a = options['a']
 option_l = options['l']
 option_r = options['r']
 
-input = ARGV
-# here is for getting a file path.
-# there is only one file path, thus, the index of array is 0.
-input_path = input.at(0).to_s
-
-file_path = File.expand_path(input_path || '')
-
-show_message unless File.exist?(file_path)
+file_path = File.expand_path(ARGV[0] || '')
 
 load_files(file_path, option_a, option_l, option_r)
