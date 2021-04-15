@@ -2,7 +2,8 @@
 
 require 'optparse'
 require 'etc'
-require 'date'
+
+MAX_COLUMN_COUNT = 3
 
 FILE_TYPE_OPTIONS = {
   'file' => '-',
@@ -21,87 +22,60 @@ PERMISSION_OPTIONS = {
   7 => 'rwx'
 }.freeze
 
-def get_file_type(ftype_string)
-  FILE_TYPE_OPTIONS.fetch(ftype_string)
-end
-
 def get_permission(permission_octal)
-  permission_last_3_digits = (permission_octal % 1000).to_s
-  last_3_digits_array = permission_last_3_digits.to_s.split('')
+  last_3_digits = (permission_octal % 1000).to_s.chars
 
-  permission_char = []
-  last_3_digits_array.each do |n|
-    permission_char << PERMISSION_OPTIONS[n.to_i]
-  end
-  permission_char.map(&:to_s).join('')
+  last_3_digits.map do |n|
+    PERMISSION_OPTIONS[n.to_i]
+  end.join
 end
 
-def load_file_details(corresponding_files_for_options_a_and_r, file_path)
-  all_file_details = []
+def print_file_details(files, file_path)
   sum_blocks = 0
-  corresponding_files_for_options_a_and_r.each do |item|
+  file_details = files.map do |item|
     file_info = File.stat("#{file_path}/#{item}")
-
-    each_block = file_info.blocks
-    sum_blocks += each_block
-
-    ftype_string = file_info.ftype
-    file_type = get_file_type(ftype_string)
-
-    permission_octal = format('%o', file_info.mode).to_i
-    permission = get_permission(permission_octal)
-
-    unformatted_link = file_info.nlink
-    link = format('%2d', unformatted_link)
-
+    sum_blocks += file_info.blocks
+    file_type = FILE_TYPE_OPTIONS.fetch(file_info.ftype)
+    permission = get_permission(format('%o', file_info.mode).to_i)
+    link = format('%2d', file_info.nlink)
     user = Etc.getpwuid(file_info.uid).name.ljust(10)
-
     group = Etc.getgrgid(file_info.gid).name.ljust(10)
-
-    unformatted_size = file_info.size
-    size = format('%3d', unformatted_size)
-
-    last_access_time = file_info.atime.to_s
-    date = DateTime.parse(last_access_time)
+    size = format('%3d', file_info.size)
+    date = file_info.atime
     mon = date.strftime('%b')
     day = date.strftime('%1d')
     time = "#{date.strftime('%H')}:#{date.strftime('%M')}"
 
-    all_file_details << "#{file_type + permission} #{link} #{user} #{group} #{size} #{mon} #{day} #{time} #{item}"
+    "#{file_type + permission} #{link} #{user} #{group} #{size} #{mon} #{day} #{time} #{item}"
   end
   puts "total #{sum_blocks}"
-  print_file_details(all_file_details)
+  file_details.each { |file_detail| puts file_detail }
 end
 
-def print_file_details(all_file_details)
-  all_file_details.each { |each_line| puts each_line }
-end
+def preprocessing_files(files)
+  max_length_string = files.max_by(&:length).length
 
-def put_files_into_2d_array(corresponding_files_for_options_a_and_r)
-  max_length_string = corresponding_files_for_options_a_and_r.max_by(&:length).length
-
-  left_justified_files = corresponding_files_for_options_a_and_r.map do |file_name|
+  formatted_files = files.map do |file_name|
     file_name.ljust(max_length_string + 1)
   end
 
-  # use 3, because the max colmun is 3
-  line_num = (left_justified_files.size % 3).zero? ? left_justified_files.size / 3 : left_justified_files.size / 3 + 1
-  two_dimensional_array = left_justified_files.each_slice(line_num).map { |array| array }
+  quo, rem = formatted_files.size.divmod(MAX_COLUMN_COUNT)
+  line_num = rem.zero? ? quo : quo + 1
+  file_matrix = formatted_files.each_slice(line_num).to_a
 
   # to use transpose, insert nil if the size of the array is different
-  max_size = two_dimensional_array.map(&:size).max
-  two_dimensional_array.each do |list|
-    if list.size < max_size
-      num = max_size - list.size
-      list.fill(nil, list.size, num)
+  max_size = file_matrix.map(&:size).max
+  file_matrix.each do |columns|
+    if columns.size < max_size
+      length = max_size - columns.size
+      columns.fill(nil, columns.size, length)
     end
   end
-  transposed_list = two_dimensional_array.transpose.map(&:flatten)
-
-  print_files_in_3_clumns(transposed_list)
+  print_file_matrix(file_matrix)
 end
 
-def print_files_in_3_clumns(transposed_list)
+def print_file_matrix(file_matrix)
+  transposed_list = file_matrix.transpose
   transposed_list.each do |array|
     array.each do |each_file_name|
       print each_file_name.to_s
@@ -111,21 +85,13 @@ def print_files_in_3_clumns(transposed_list)
 end
 
 def load_files(file_path, option_a, option_l, option_r)
-  sorted_files = []
-
   files_from_path = if option_a
                       Dir.glob('*', File::FNM_DOTMATCH, base: file_path)
                     else
                       Dir.glob('*', base: file_path)
                     end
-  files_from_path.sort.each { |file| sorted_files << file }
-  corresponding_files_for_options_a_and_r = option_r ? sorted_files.reverse : sorted_files
-  if option_l
-    load_file_details(corresponding_files_for_options_a_and_r,
-                      file_path)
-  else
-    put_files_into_2d_array(corresponding_files_for_options_a_and_r)
-  end
+  sorted_files = option_r ? files_from_path.sort.reverse : files_from_path.sort
+  option_l ? print_file_details(sorted_files, file_path) : preprocessing_files(sorted_files)
 end
 
 options = ARGV.getopts('alr')
