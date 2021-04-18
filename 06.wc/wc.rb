@@ -53,10 +53,6 @@ def print_with_filename(option_l, l_num, w_num, c_num, input)
   end
 end
 
-def print_sum_l(sum_l)
-  puts "#{sum_l} total"
-end
-
 def print_sum_total(option_l, sum_l, sum_w, sum_c)
   if option_l
     puts "#{sum_l} total"
