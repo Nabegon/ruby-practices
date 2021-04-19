@@ -31,11 +31,11 @@ def main
 
   file_path = File.expand_path(ARGV[0] || '')
 
-  files = load_files(file_path, option_a, option_l, option_r)
+  files = find_files(file_path, option_a, option_l, option_r)
   option_l ? print_file_details(files, file_path) : print_file_matrix(files)
 end
 
-def load_files(file_path, option_a, _option_l, option_r)
+def find_files(file_path, option_a, _option_l, option_r)
   files_from_path = if option_a
                       Dir.glob('*', File::FNM_DOTMATCH, base: file_path)
                     else
@@ -46,8 +46,8 @@ end
 
 def print_file_details(files, file_path)
   sum_blocks = 0
-  file_details = files.map do |item|
-    file_stat = File.stat("#{file_path}/#{item}")
+  file_details = files.map do |file|
+    file_stat = File.stat("#{file_path}/#{file}")
     sum_blocks += file_stat.blocks
     file_type = FILE_TYPE_OPTIONS.fetch(file_stat.ftype)
     permission = get_permission(format('%o', file_stat.mode).to_i)
@@ -60,7 +60,7 @@ def print_file_details(files, file_path)
     day = date.strftime('%1d')
     time = "#{date.strftime('%H')}:#{date.strftime('%M')}"
 
-    "#{file_type + permission} #{link} #{user} #{group} #{size} #{mon} #{day} #{time} #{item}"
+    "#{file_type + permission} #{link} #{user} #{group} #{size} #{mon} #{day} #{time} #{file}"
   end
   puts "total #{sum_blocks}"
   file_details.each { |file_detail| puts file_detail }
@@ -76,13 +76,13 @@ end
 
 def print_file_matrix(files)
   file_matrix = build_file_matrix(files)
-  max_length_string = file_matrix.flatten.compact.max_by(&:length).length
+  max_length = file_matrix.flatten.compact.max_by(&:length).length
 
   file_matrix.each do |columns|
     columns.each do |file_name|
       next if file_name.nil?
 
-      print file_name.ljust(max_length_string + 1)
+      print file_name.ljust(max_length + 1)
     end
     puts "\n"
   end
