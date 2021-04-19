@@ -9,7 +9,7 @@ def main
   option_l = options['l']
   sum_l = sum_w = sum_c = delta_l = delta_w = delta_c = 0
 
-  if !ARGV[0].nil?
+  if ARGV[0]
     ARGV.each_with_index do |_arg, i|
       input = ARGV[i]
       break unless check_file(input)
