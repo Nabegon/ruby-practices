@@ -28,4 +28,14 @@ class FrameTest < Minitest::Test
     frame = Frame.new('X', '0')
     assert_equal 10, frame.score
   end
+
+  def test_get_first_score
+    frame = Frame.new('8', '1')
+    assert_equal 8, frame.first_shot
+  end
+
+  def test_get_second_score
+    frame = Frame.new('8', '1')
+    assert_equal 1, frame.second_shot
+  end
 end
