@@ -12,6 +12,3 @@ class Shot
     shots = inputs.map { |i| i == 'X' ? 10 : i.to_i }  
   end
 end
-
-shot = Shot.new('1, 1, 1')
-shot.score
