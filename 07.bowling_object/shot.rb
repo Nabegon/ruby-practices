@@ -1,35 +1,20 @@
 # frozen_string_literal: true
 
 class Shot
-  attr_reader :pin
+  attr_reader :mark
 
-  def initialize(pin)
-    @pin = pin
+  def initialize(mark)
+    @mark = mark
   end
   
   def score
-    if @pin == 'X'
-      return 10
-    end
-
-    @pin.to_i
-  end
-end
-
-# shot = Shot.new('9')
-# puts shot.score
-
-=begin
-class Shot
-  def score(input)
-    if input == 'X'
-      return '10'
-    else
-      return input
+    marks = @mark.split(',')
+    marks.each do |m|
+      if m == 'X'
+        return 10
+      else
+        return m.to_i
+      end
     end
   end
 end
-
-shot = Shot.new
-puts shot.score('9')
-=end
