@@ -7,26 +7,17 @@ class Game
   def initialize(input)
     @frames = Frame.new(input).divide_by_frames
     @score = 0
-    p @frames
   end
   
   def score
     @frames.each_with_index do |frame, index|
       if is_strike?(frame)
-        @score += if !@frames[index + 1].nil?
-          10 + @frames[index + 1][0] + @frames[index + 1][1]
-        else
-          @frames[index].sum
-        end
+        @score += 10 + @frames[index + 1].sum if is_not_last_frame?(index)
       elsif is_spare?(frame)
-        @score += if !@frames[index + 1].nil?
-                    10 + @frames[index + 1][0]
-                  else
-                    10
-                  end
-      elsif @frames[index + 1].nil? && (is_strike?(frame) || @frames[index].sum == 10)
+        @score += 10 + @frames[index + 1][0] if is_not_last_frame?(index)          
+      elsif is_last_frame?(index) && (is_strike?(frame) || is_spare?(frame))
         @score += frame.sum
-      elsif !@frames[index + 1].nil?
+      else
         @score += frame.sum
       end
     end
@@ -41,7 +32,40 @@ class Game
   def is_spare?(frame)
     frame.sum == 10
   end
+
+  def is_not_last_frame?(index)
+    !@frames[index + 1].nil?
+  end
+
+  def is_last_frame?(index)
+    @frames[index + 1].nil?
+  end
 end
+
+=begin 
+        if is_strike?(frame)
+        @score += if !@frames[index + 1].nil?
+          10 + @frames[index + 1][0] + @frames[index + 1][1]
+        else
+          @frames[index].sum
+        end 
+
+      elsif is_spare?(frame)
+        @score += if !@frames[index + 1].nil?
+                    10 + @frames[index + 1][0]
+                  else
+                    10
+                  end
+      elsif @frames[index + 1].nil? && (is_strike?(frame) || @frames[index].sum == 10)
+        @score += frame.sum
+      elsif !@frames[index + 1].nil?
+        @score += frame.sum
+      end
+    end
+    @score
+  end
+=end
+
 =begin (0..9).each do |number|
       frame = @frames.slice(number)
       next_frame = @frames.slice(number + 1)
@@ -62,5 +86,5 @@ end
 =end
 
 
-game = Game.new('1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1')
+game = Game.new('X,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1')
 puts game.score
