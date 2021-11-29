@@ -14,7 +14,7 @@ class FrameTest < Minitest::Test
     assert_equal 20, frame.score
   end
 
-  def test_add_numbers
+  def test_add_strikes
     frame = Frame.new('X,X,X')
     assert_equal 30, frame.score
   end

@@ -7,7 +7,7 @@ class Shot
     @input = input
   end
   
-  def score
+  def format_input
     inputs = @input.split(',')
     shots = inputs.map { |i| i == 'X' ? 10 : i.to_i }  
   end
