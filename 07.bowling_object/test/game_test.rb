@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require '/home/miki/ruby-practices/ruby-practices/07.bowling_object/game'
+require './lib/game'
 require 'minitest/autorun'
 
 class GameTest < Minitest::Test 

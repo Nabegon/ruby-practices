@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require '/home/miki/ruby-practices/ruby-practices/07.bowling_object/shot'
+require_relative 'shot'
 
 class Frame
   def initialize(input)

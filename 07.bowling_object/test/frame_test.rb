@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require '/home/miki/ruby-practices/ruby-practices/07.bowling_object/frame'
+require './lib/frame'
 require 'minitest/autorun'
 
 class FrameTest < Minitest::Test
