@@ -26,6 +26,3 @@ class Frame
     frames
   end
 end
-
-frame = Frame.new('1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1')
-frame.divide_by_frames 

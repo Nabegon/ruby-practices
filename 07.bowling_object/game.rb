@@ -36,5 +36,7 @@ class Game
   end
 end
 
-# game = Game.new('1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,X,1,1')
-# puts game.score
+if __FILE__ == $PROGRAM_NAME
+  game = Game.new(ARGV[0])
+  puts game.score
+end
