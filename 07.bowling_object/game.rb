@@ -12,7 +12,7 @@ class Game
   def score
     @frames.each_with_index do |frame, index|
       if is_strike?(frame)
-        is_not_last_frame?(index) ? @score += frame.sum + @frames[index + 1].sum : @score += frame.sum
+        is_not_last_frame?(index) ? @score += frame.sum + @frames[index + 1][0] + @frames[index + 1][1] : @score += frame.sum
       elsif is_spare?(frame)
         is_not_last_frame?(index) ? @score += frame.sum + @frames[index + 1][0] : @score += frame.sum
       else
