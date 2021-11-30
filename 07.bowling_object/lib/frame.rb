@@ -18,7 +18,7 @@ class Frame
         if frame.size >= 2 || shot == 10
           frames << frame.dup
           frame.clear
-        end     
+        end
       else
         frames.last << shot
       end

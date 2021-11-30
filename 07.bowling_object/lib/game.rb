@@ -8,30 +8,31 @@ class Game
     @frames = Frame.new(input).divide_by_frames
     @score = 0
   end
-  
+
   def score
     @frames.each_with_index do |frame, index|
-      if is_strike?(frame)
-        is_not_last_frame?(index) ? @score += frame.sum + @frames[index + 1][0] + @frames[index + 1][1] : @score += frame.sum
-      elsif is_spare?(frame)
-        is_not_last_frame?(index) ? @score += frame.sum + @frames[index + 1][0] : @score += frame.sum
-      else
-        @score += frame.sum
-      end
+      @score += if strike?(frame)
+                  not_last_frame?(index) ? frame.sum + @frames[index + 1][0] + @frames[index + 1][1] : frame.sum
+                elsif spare?(frame)
+                  not_last_frame?(index) ? frame.sum + @frames[index + 1][0] : frame.sum
+                else
+                  frame.sum
+                end
     end
     @score
   end
-  
+
   private
-  def is_strike?(frame)
+
+  def strike?(frame)
     frame[0] == 10
   end
 
-  def is_spare?(frame)
+  def spare?(frame)
     frame.sum == 10
   end
 
-  def is_not_last_frame?(index)
+  def not_last_frame?(index)
     !@frames[index + 1].nil?
   end
 end

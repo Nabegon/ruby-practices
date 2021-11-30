@@ -3,13 +3,13 @@
 require './lib/game'
 require 'minitest/autorun'
 
-class GameTest < Minitest::Test 
-    def test_pin_0
+class GameTest < Minitest::Test
+  def test_0pins
     game = Game.new('0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0')
-    assert_equal 0, game.score  
+    assert_equal 0, game.score
   end
 
-  def test_pin_1
+  def test_1pins
     game = Game.new('1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1')
     assert_equal 20, game.score
   end
@@ -27,7 +27,7 @@ class GameTest < Minitest::Test
   def test_strike
     game = Game.new('X,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1')
     assert_equal 30, game.score
-  end 
+  end
 
   def test_strike_last_frame
     game = Game.new('1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,X,1,1')

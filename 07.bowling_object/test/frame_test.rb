@@ -4,7 +4,7 @@ require './lib/frame'
 require 'minitest/autorun'
 
 class FrameTest < Minitest::Test
-  def test_return_0
+  def test_return0
     frame = Frame.new('0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0')
     assert_equal 0, frame.score
   end
