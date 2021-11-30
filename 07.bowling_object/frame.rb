@@ -14,13 +14,13 @@ class Frame
     @shots.each do |shot|
       frame << shot
 
-      if frames.size < 10 # 1 to 9
+      if frames.size < 10
         if frame.size >= 2 || shot == 10
           frames << frame.dup
           frame.clear
         end     
       else
-        frames.last << shot # why do i need this?
+        frames.last << shot
       end
     end
     frames

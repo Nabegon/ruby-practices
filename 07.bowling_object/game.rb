@@ -12,11 +12,9 @@ class Game
   def score
     @frames.each_with_index do |frame, index|
       if is_strike?(frame)
-        @score += 10 + @frames[index + 1].sum if is_not_last_frame?(index)
+        is_not_last_frame?(index) ? @score += frame.sum + @frames[index + 1].sum : @score += frame.sum
       elsif is_spare?(frame)
-        @score += 10 + @frames[index + 1][0] if is_not_last_frame?(index)          
-      elsif is_last_frame?(index) && (is_strike?(frame) || is_spare?(frame))
-        @score += frame.sum
+        is_not_last_frame?(index) ? @score += frame.sum + @frames[index + 1][0] : @score += frame.sum
       else
         @score += frame.sum
       end
@@ -36,55 +34,7 @@ class Game
   def is_not_last_frame?(index)
     !@frames[index + 1].nil?
   end
-
-  def is_last_frame?(index)
-    @frames[index + 1].nil?
-  end
 end
 
-=begin 
-        if is_strike?(frame)
-        @score += if !@frames[index + 1].nil?
-          10 + @frames[index + 1][0] + @frames[index + 1][1]
-        else
-          @frames[index].sum
-        end 
-
-      elsif is_spare?(frame)
-        @score += if !@frames[index + 1].nil?
-                    10 + @frames[index + 1][0]
-                  else
-                    10
-                  end
-      elsif @frames[index + 1].nil? && (is_strike?(frame) || @frames[index].sum == 10)
-        @score += frame.sum
-      elsif !@frames[index + 1].nil?
-        @score += frame.sum
-      end
-    end
-    @score
-  end
-=end
-
-=begin (0..9).each do |number|
-      frame = @frames.slice(number)
-      next_frame = @frames.slice(number + 1)
-      after_next_frame = @frames.slice(number + 2)
-      next_frame = [] if next_frame.nil?
-      after_next_frame = [] if after_next_frame.nil?
-      add_frame = next_frame + after_next_frame
-
-      @score += if frame[0] == 10
-        frame.sum + add_frame.slice(0, 2).sum
-      elsif frame.sum == 10
-        frame.sum + add_frame.slice(0)
-      else
-        frame.sum
-      end
-      @score
-    end 
-=end
-
-
-game = Game.new('X,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1')
-puts game.score
+# game = Game.new('1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,X,1,1')
+# puts game.score
