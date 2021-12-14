@@ -23,23 +23,19 @@ class Frame
     @first_shot.score + @second_shot.score == 10
   end
 
-  def calcStrike
-    if @second_shot.nil?
-      @first_shot.score
-    else
-      @first_shot.score + @second_shot.score
-    end 
+  def first_shot
+    @first_shot.score
   end
 
-  def firstShot
-    @first_shot.score
+  def second_shot
+    @second_shot.score
   end
 
   def strike?
     @first_shot.score == 10
   end
 
-  def twoschots
-    @first_shot.score + @second_shot.score
+  def three_shots?
+    !@third_shot.nil?
   end
 end

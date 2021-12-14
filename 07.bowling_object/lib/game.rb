@@ -13,15 +13,14 @@ class Game
   def record_shots
     index = 0
     while index <= @inputs.size
-      if @inputs[index] == 'X' 
-        if !lastShot?(index)
-          @frames << Frame.new(@inputs[index]) 
-          index += 1
-          #break
+      if @inputs[index] == 'X'
+        if !last_shot?(index)
+          @frames << Frame.new(@inputs[index])
+          # break
         else
           @frames << Frame.new(@inputs[index], @inputs[index + 1], @inputs[index + 2]) && break
-          index += 1
         end
+        index += 1
       elsif @inputs[index + 3].nil?
         @frames << Frame.new(@inputs[index], @inputs[index + 1], @inputs[index + 2]) && break
       else
@@ -30,43 +29,55 @@ class Game
       end
     end
     @frames
-  end 
+  end
 
   def score
     @frames.each_with_index do |frame, index|
-      if frame.strike?
-        p @frames[index + 1]
-        p index
-        if lastFrame?(index)
-          @score += frame.score
-        elsif @frames[index + 1].strike? && @frames[index + 2].strike?
-          @score += frame.score + @frames[index + 1].score + @frames[index + 2].score
-        elsif @frames[index + 1].strike? && !@frames[index + 2].strike?
-          @score += frame.score + @frames[index + 1].score + @frames[index + 2].firstShot
-        elsif @frames[index + 1].score >= 11
-          @score += frame.score + @frames[index + 1].twoschots
-        else
-          @score += frame.score + @frames[index + 1].score
-        end
-        p @score
-      elsif frame.spare?
-        lastFrame?(index) ? @score += frame.score : @score += frame.score + @frames[index + 1].firstShot
-        p @score
-      else
-        p @score += frame.score
-      end
+      @score += if last_frame?(index)
+                  frame.score
+                elsif frame.strike?
+                  if one_before_last_frame?(index)
+                    if @frames[index + 1].three_shots?
+                      frame.score + @frames[index + 1].first_shot + @frames[index + 1].second_shot
+                    else
+                      frame.score + @frames[index + 1].score
+                    end
+                  elsif two_before_last_frame?(index) && @frames[index + 1].strike? && @frames[index + 2].strike? || @frames[index + 2].spare?
+                    frame.score + @frames[index + 1].score + @frames[index + 2].first_shot
+                  elsif @frames[index + 1].strike? && @frames[index + 2].strike?
+                    frame.score + @frames[index + 1].score + @frames[index + 2].score
+                  elsif @frames[index + 1].first_shot == 10 && @frames[index + 2].first_shot != 10
+                    frame.score + @frames[index + 1].score + @frames[index + 2].first_shot
+                  elsif @frames[index + 1].spare?
+                    frame.score + @frames[index + 1].score
+                  else
+                    frame.score + @frames[index + 1].score
+                  end
+                elsif frame.spare?
+                  frame.score + @frames[index + 1].first_shot
+                else
+                  frame.score
+                end
     end
-    p @score
+    @score
   end
 
   private
-  
-  def lastFrame?(index)
-    @frames[index + 1].nil? 
+
+  def last_frame?(index)
+    @frames[index + 1].nil?
   end
 
-  def lastShot?(index)
+  def last_shot?(index)
     @inputs[index + 3].nil?
+  end
+
+  def one_before_last_frame?(index)
+    @frames[index + 2].nil?
+  end
+
+  def two_before_last_frame?(index)
+    @frames[index + 3].nil?
   end
 end
 
