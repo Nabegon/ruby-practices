@@ -19,8 +19,20 @@ class Frame
     end
   end
 
+  def shots
+    if @first_shot.score == 'X'
+      @frst_shot.score
+    else
+      [@first_shot.score, @second_shot.score]
+    end
+  end
+
+  def strike?
+    @first_shot.score == 10
+  end
+
   def spare?
-    @first_shot.score + @second_shot.score == 10
+    !strike? && @first_shot.score + @second_shot.score == 10
   end
 
   def first_shot
@@ -29,10 +41,6 @@ class Frame
 
   def second_shot
     @second_shot.score
-  end
-
-  def strike?
-    @first_shot.score == 10
   end
 
   def three_shots?

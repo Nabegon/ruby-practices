@@ -12,57 +12,58 @@ class Game
 
   def record_shots
     index = 0
-    while index <= @inputs.size
+    while index < @inputs.size
       if @inputs[index] == 'X'
-        if !last_shot?(index)
-          @frames << Frame.new(@inputs[index])
-          # break
-        else
-          @frames << Frame.new(@inputs[index], @inputs[index + 1], @inputs[index + 2]) && break
-        end
+        @frames << Frame.new(@inputs[index])
         index += 1
-      elsif @inputs[index + 3].nil?
-        @frames << Frame.new(@inputs[index], @inputs[index + 1], @inputs[index + 2]) && break
       else
         @frames << Frame.new(@inputs[index], @inputs[index + 1])
         index += 2
       end
+      if @frames.size == 9
+        @frames << Frame.new(@inputs[index], @inputs[index + 1], @inputs[index + 2])
+        break
+      end
     end
-    @frames
   end
 
   def score
+    record_shots
     @frames.each_with_index do |frame, index|
-      @score += if last_frame?(index)
-                  frame.score
-                elsif frame.strike?
-                  if one_before_last_frame?(index)
-                    if @frames[index + 1].three_shots?
-                      frame.score + @frames[index + 1].first_shot + @frames[index + 1].second_shot
-                    else
-                      frame.score + @frames[index + 1].score
-                    end
-                  elsif two_before_last_frame?(index) && @frames[index + 1].strike? && @frames[index + 2].strike? || @frames[index + 2].spare?
-                    frame.score + @frames[index + 1].score + @frames[index + 2].first_shot
-                  elsif @frames[index + 1].strike? && @frames[index + 2].strike?
-                    frame.score + @frames[index + 1].score + @frames[index + 2].score
-                  elsif @frames[index + 1].first_shot == 10 && @frames[index + 2].first_shot != 10
-                    frame.score + @frames[index + 1].score + @frames[index + 2].first_shot
-                  elsif @frames[index + 1].spare?
-                    frame.score + @frames[index + 1].score
-                  else
-                    frame.score + @frames[index + 1].score
-                  end
-                elsif frame.spare?
-                  frame.score + @frames[index + 1].first_shot
-                else
-                  frame.score
-                end
+      @score +=
+        if last_frame?(index)
+          frame.score
+        elsif frame.strike?
+          if one_before_last_frame?(index)
+            frame.score + add_bonus_strike_score_last_frame(index)
+          else
+            frame.score + add_bonus_strike_score(index).sum
+          end
+        elsif frame.spare?
+          frame.score + @frames[index + 1].first_shot
+        else
+          frame.score
+        end
     end
-    @score
+    p @score
   end
 
   private
+
+  def add_bonus_strike_score(index)
+    shots = []
+    shots << [*@frames[index + 1].shots, *@frames[index + 2]&.shots].compact
+    shots.first(2)
+    shots.inject(:+)
+  end
+
+  def add_bonus_strike_score_last_frame(index)
+    if @frames[index + 1].three_shots?
+      @frames[index + 1].first_shot + @frames[index + 1].second_shot
+    else
+      @frames[index + 1].score
+    end
+  end
 
   def last_frame?(index)
     @frames[index + 1].nil?
@@ -83,6 +84,5 @@ end
 
 if __FILE__ == $PROGRAM_NAME
   @game = Game.new(ARGV[0])
-  @game.record_shots
   @game.score
 end
