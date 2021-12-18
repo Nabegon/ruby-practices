@@ -37,7 +37,9 @@ class Game
           if one_before_last_frame?(index)
             frame.score + add_bonus_strike_score_last_frame(index)
           else
-            frame.score + add_bonus_strike_score(index).sum
+            next_frame = @frames[index + 1]
+            second_next_frame = @frames[index + 2]
+            frame.score + add_bonus_strike_score(next_frame, second_next_frame)
           end
         elsif frame.spare?
           frame.score + @frames[index + 1].first_shot
@@ -50,11 +52,10 @@ class Game
 
   private
 
-  def add_bonus_strike_score(index)
-    shots = []
-    shots << [*@frames[index + 1].shots, *@frames[index + 2]&.shots].compact
-    shots.first(2)
-    shots.inject(:+)
+  def add_bonus_strike_score(first_frame, second_frame)
+    shots_array = []
+    shots_array << [first_frame.shots, second_frame.shots]
+    shots_array.flatten.first(2).inject(:+)
   end
 
   def add_bonus_strike_score_last_frame(index)
