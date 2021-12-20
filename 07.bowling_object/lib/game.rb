@@ -26,14 +26,14 @@ class Game
 
   def score
     record_shots_to_frames
-    @frames.each_with_index.sum do |frame, index|
-      score_calculator(frame, index)
+    @frames.map.with_index.sum do |frame, index|
+      calculate_score_per_frame(frame, index)
     end
   end
 
   private
 
-  def score_calculator(frame, index)
+  def calculate_score_per_frame(frame, index)
     if last_frame?(index)
       frame.score
     elsif frame.strike?
