@@ -8,4 +8,8 @@ class Shot
   def score
     @input == 'X' ? 10 : @input.to_i
   end
+
+  def strike?
+    @input == 'X'
+  end
 end
