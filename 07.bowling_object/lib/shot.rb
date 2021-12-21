@@ -6,7 +6,7 @@ class Shot
   end
 
   def score
-    @user_input == 'X' ? 10 : @user_input.to_i
+    strike? ? 10 : @user_input.to_i
   end
 
   def strike?
