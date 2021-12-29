@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'ls_command'
+require_relative '../lib/ls_command'
 require 'optparse'
 require 'pathname'
 
@@ -15,6 +15,6 @@ opt.parse!(ARGV)
 
 if __FILE__ == $PROGRAM_NAME
   file_path = File.expand_path(ARGV[0] || '')
-  lsCommand = LsCommand.new(options)
-  puts lsCommand.collect_files(file_path)
+  ls_command = LsCommand.new(options)
+  puts ls_command.collect_files(file_path)
 end
