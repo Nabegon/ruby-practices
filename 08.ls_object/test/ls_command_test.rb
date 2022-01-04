@@ -41,13 +41,13 @@ class LsCommandTest < Minitest::Test
     options = { long_listing_format: true, reverse: false, dot_match: false }
     ls = LsCommand.new(options)
     expected = <<~TEXT.chomp
-    total 8
-    -rw-r--r--  1 miki       miki        36 Dec 29 20:36 file1.rb
-    -rw-r--r--  1 miki       miki        36 Dec 29 20:36 file2.rb
-    -rw-r--r--  1 miki       miki        36 Dec 29 20:36 file3.rb
-    -rw-r--r--  1 miki       miki        36 Dec 29 20:36 file4.rb
-    drwxr-xr-x  2 miki       miki       4096 Dec 29 15:36 test
-    drwxr-xr-x  2 miki       miki       4096 Dec 29 15:36 test2
+      total 8
+      -rw-r--r--  1 miki       miki        36 Dec 29 20:36 file1.rb
+      -rw-r--r--  1 miki       miki        36 Dec 29 20:36 file2.rb
+      -rw-r--r--  1 miki       miki        36 Dec 29 20:36 file3.rb
+      -rw-r--r--  1 miki       miki        36 Dec 29 20:36 file4.rb
+      drwxr-xr-x  2 miki       miki       4096 Dec 29 15:36 test
+      drwxr-xr-x  2 miki       miki       4096 Dec 29 15:36 test2
     TEXT
     assert_output("#{expected}\n") { puts ls.collect_files(TARGET_PATHNAME) }
   end
