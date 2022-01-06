@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require_relative 'listed_files'
-require_relative 'long_listing_of_files'
+require_relative 'short_format'
+require_relative 'long_format'
 
 class LsCommand
   def initialize(options)
@@ -19,12 +19,12 @@ class LsCommand
   private
 
   def short_format(files_from_directory)
-    listed_files = ListedFiles.new(files_from_directory)
+    listed_files = ShortFormat.new(files_from_directory)
     listed_files.build_file_matrix
   end
 
   def long_format(files_from_directory, file_path)
-    long_listing_of_files = LongListingOfFiles.new(files_from_directory, file_path)
+    long_listing_of_files = LongFormat.new(files_from_directory, file_path)
     long_listing_of_files.collect_file_details
   end
 end
