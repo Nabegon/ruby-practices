@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'etc'
+# require_relative 'ls_command'
 
 class LongFormat
   FILE_TYPE_OPTIONS = {
@@ -25,7 +26,7 @@ class LongFormat
     @file_path = file_path
   end
 
-  def collect_file_details
+  def print
     sum_blocks = 0
     file_details = @files.map do |file|
       file_stat = File.stat("#{@file_path}/#{file}")

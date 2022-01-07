@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'minitest/autorun'
-require_relative '../lib/ls_command'
+require_relative '../lib/main'
 
 class LsCommandTest < Minitest::Test
   TARGET_PATHNAME = File.expand_path('test/sample-app')

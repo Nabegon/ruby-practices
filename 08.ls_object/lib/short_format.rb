@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# require_relative 'ls_command'
+
 class ShortFormat
   MAX_COLUMN_COUNT = 3
 
@@ -7,7 +9,7 @@ class ShortFormat
     @files = files
   end
 
-  def build_file_matrix
+  def print
     quo, rem = @files.size.divmod(MAX_COLUMN_COUNT)
     line_num = rem.zero? ? quo : quo + 1
     file_matrix = @files.each_slice(line_num).to_a
